@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Алексей Доронин | Системный AI-интегратор</title>
+    <!-- Шрифты и иконки -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Premium Dubai Palette */
+            --bg-body: #F8FAFC;
+            --surface: #FFFFFF;
+            --primary: #0F172A; /* Глубокий премиальный черный/синий */
+            --accent: #2563EB; /* Технологичный синий */
+            --gold: #D4AF37; /* Акцент "Золото" (для Дубая) */
+            --text-main: #1E293B;
+            --text-gray: #64748B;
+            --radius: 20px;
+            --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+            --gradient-hero: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* --- HEADER (Glassmorphism) --- */
+        nav {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .nav-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 22px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo i { color: var(--accent); }
+
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+        .nav-links a:hover { color: var(--accent); }
+
+        .btn-nav {
+            background: var(--primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.2);
+        }
+        .btn-nav:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(15, 23, 42, 0.3); }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            padding: 80px 0 100px;
+            overflow: hidden;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: 56px;
+            line-height: 1.1;
+            font-weight: 800;
+            margin-bottom: 24px;
+            color: var(--primary);
+            letter-spacing: -1px;
+        }
+
+        .hero-accent {
+            background: linear-gradient(90deg, var(--accent), #60A5FA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-desc {
+            font-size: 20px;
+            color: var(--text-gray);
+            margin-bottom: 40px;
+            max-width: 550px;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-xl {
+            padding: 18px 36px;
+            border-radius: 16px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary { background: var(--accent); color: white; box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3); }
+        .btn-primary:hover { background: #1d4ed8; transform: translateY(-3px); }
+
+        .btn-outline { background: white; border: 2px solid #E2E8F0; color: var(--primary); }
+        .btn-outline:hover { border-color: var(--primary); background: var(--bg-body); }
+
+        /* Hero Image Composition */
+        .hero-image-block {
+            position: relative;
+            height: 600px;
+        }
+
+        .img-main {
+            width: 85%;
+            height: 500px;
+            object-fit: cover;
+            border-radius: 30px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            z-index: 1;
+        }
+
+        .floating-card {
+            position: absolute;
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .fc-1 { bottom: 60px; left: -30px; width: 220px; }
+        .fc-2 { top: 40px; right: 20px; width: 180px; animation-delay: 2s; }
+
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: #EFF6FF;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        @keyframes float { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(-10px);} }
+
+        /* --- TICKER (Running Line) --- */
+        .ticker-wrap {
+            width: 100%;
+            background: var(--primary);
+            overflow: hidden;
+            padding: 20px 0;
+            color: rgba(255,255,255,0.7);
+        }
+        .ticker {
+            display: flex;
+            animation: ticker 20s linear infinite;
+            white-space: nowrap;
+        }
+        .ticker-item {
+            font-size: 18px;
+            font-weight: 700;
+            padding: 0 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+
+        /* --- ABOUT (Expanded) --- */
+        .about-section { padding: 100px 0; }
+        
+        .section-header { margin-bottom: 60px; max-width: 800px; }
+        .section-label { color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; font-size: 14px; margin-bottom: 10px; display: block; }
+        .section-title { font-size: 42px; font-weight: 800; color: var(--primary); line-height: 1.2; }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 50px;
+            background: white;
+            padding: 50px;
+            border-radius: 30px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .about-text h3 { font-size: 28px; margin-bottom: 20px; }
+        .about-text p { font-size: 18px; color: var(--text-gray); margin-bottom: 20px; }
+        
+        .quote-block {
+            border-left: 4px solid var(--gold);
+            padding-left: 20px;
+            font-style: italic;
+            color: var(--primary);
+            font-weight: 600;
+            margin: 30px 0;
+            font-size: 18px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: #F1F5F9;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+        }
+        .stat-num { font-size: 36px; font-weight: 800; color: var(--primary); display: block; }
+        .stat-label { font-size: 14px; color: var(--text-gray); font-weight: 600; }
+
+        /* --- COMPARISON (Before/After) --- */
+        .comparison-section {
+            padding: 80px 0;
+            background: #0F172A;
+            color: white;
+            border-radius: 40px;
+            margin: 40px 20px; /* Margin from screen edge */
+        }
+
+        .comp-container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        
+        .comp-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 50px;
+        }
+
+        .comp-card {
+            background: rgba(255,255,255,0.05);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+        }
+
+        .comp-card.bad { border-top: 4px solid #EF4444; }
+        .comp-card.good { border-top: 4px solid #10B981; background: rgba(16, 185, 129, 0.05); }
+
+        .comp-title { font-size: 24px; font-weight: 700; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .comp-list li {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 15px;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        /* --- SERVICES (Cards) --- */
+        .services-section { padding: 100px 0; }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            transition: all 0.4s;
+            border: 1px solid #F1F5F9;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent);
+        }
+
+        .tag-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #F1F5F9;
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-gray);
+        }
+        
+        .service-card.highlight .tag-badge { background: var(--accent); color: white; }
+        .service-card.highlight { border: 2px solid var(--accent); }
+
+        .srv-icon {
+            font-size: 40px;
+            color: var(--primary);
+            margin-bottom: 24px;
+        }
+        .srv-title { font-size: 24px; font-weight: 800; margin-bottom: 12px; }
+        .srv-desc { color: var(--text-gray); margin-bottom: 24px; font-size: 15px; min-height: 45px; }
+
+        .check-list li { margin-bottom: 10px; display: flex; gap: 10px; font-size: 14px; color: var(--text-main); }
+        .check-list i { color: var(--accent); }
+
+        .srv-btn {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            padding: 14px;
+            border-radius: 12px;
+            background: #F8FAFC;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+            transition: 0.3s;
+        }
+        .service-card:hover .srv-btn { background: var(--primary); color: white; }
+
+        /* --- LEAD MAGNET (Dark) --- */
+        .magnet-block {
+            background: url('https://images.unsplash.com/photo-1512453979798-5ea904ac66de?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+            border-radius: 40px;
+            padding: 80px 40px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .magnet-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.8));
+            z-index: 1;
+        }
+        
+        .magnet-content { position: relative; z-index: 2; max-width: 700px; margin: 0 auto; }
+        
+        .magnet-btn {
+            background: var(--gold);
+            color: var(--primary);
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-weight: 800;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+            font-size: 18px;
+            transition: 0.3s;
+        }
+        .magnet-btn:hover { background: white; transform: scale(1.05); }
+
+        /* --- FLOATING BUTTON --- */
+        .float-tg {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #2AABEE;
+            color: white;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 10px 30px rgba(42, 171, 238, 0.5);
+            z-index: 9999;
+            transition: transform 0.3s;
+            animation: pulse-tg 2s infinite;
+        }
+        .float-tg:hover { transform: scale(1.1); }
+        .float-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #EF4444;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        @keyframes pulse-tg { 0% {box-shadow: 0 0 0 0 rgba(42, 171, 238, 0.7);} 70% {box-shadow: 0 0 0 15px rgba(42, 171, 238, 0);} 100% {box-shadow: 0 0 0 0 rgba(42, 171, 238, 0);} }
+
+        /* --- FOOTER --- */
+        footer {
+            background: white;
+            padding: 60px 0 20px;
+            margin-top: 80px;
+            border-top: 1px solid #F1F5F9;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-links a { display: block; color: var(--text-gray); text-decoration: none; margin-bottom: 10px; }
+        .footer-links a:hover { color: var(--accent); }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .hero-grid, .about-grid, .comp-grid, .footer-grid { grid-template-columns: 1fr; }
+            .hero-content h1 { font-size: 40px; }
+            .hero-image-block { height: 400px; order: -1; }
+            .img-main { width: 100%; height: 100%; }
+            .nav-links { display: none; }
+            .magnet-block { padding: 40px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <nav>
+        <div class="container nav-inner">
+            <div class="logo">
+                <i class="fa-solid fa-layer-group"></i>
+                Doronin<span>.AI</span>
+            </div>
+            <div class="nav-links">
+                <a href="#about">Обо мне</a>
+                <a href="#comparison">До/После</a>
+                <a href="#services">Услуги</a>
+                <a href="#cases">Кейсы</a>
+            </div>
+            <a href="https://t.me/AlexD_GOLD" class="btn-nav">
+                <i class="fa-brands fa-telegram"></i> Написать мне
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container hero-grid">
+            <div class="hero-content">
+                <span style="background: #EFF6FF; color: var(--accent); padding: 5px 12px; border-radius: 20px; font-weight: 700; font-size: 13px; text-transform: uppercase;">Based in Dubai</span>
+                <h1>Возвращаю вам<br><span class="hero-accent" id="typewriter">Время</span><br>через системы</h1>
+                <p class="hero-desc">
+                    Системный интегратор AI. Я не верю в магию и хайп. Я верю в инженерный подход, Python и автоматизацию, которая работает 24/7 без больничных.
+                </p>
+                <div class="hero-btns">
+                    <a href="https://t.me/AlexD_GOLD" class="btn-xl btn-primary">
+                        <i class="fa-solid fa-file-arrow-down"></i> Скачать чек-лист
+                    </a>
+                    <a href="#services" class="btn-xl btn-outline">
+                        Смотреть услуги
+                    </a>
+                </div>
+            </div>
+            
+            <div class="hero-image-block">
+                <!-- ФОТО 1: ГЛАВНОЕ ФОТО (Вставь свою ссылку) -->
+                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80" alt="Алексей Доронин" class="img-main">
+                
+                <!-- Floating Elements -->
+                <div class="floating-card fc-1">
+                    <div class="icon-box"><i class="fa-solid fa-clock"></i></div>
+                    <div>
+                        <div style="font-weight: 800; font-size: 18px; color: var(--primary);">10+ часов</div>
+                        <div style="font-size: 12px; color: var(--text-gray);">Экономии в неделю</div>
+                    </div>
+                </div>
+                
+                <div class="floating-card fc-2">
+                    <div class="icon-box" style="background: #ECFDF5; color: #10B981;"><i class="fa-solid fa-check"></i></div>
+                    <div>
+                        <div style="font-weight: 800; font-size: 18px; color: var(--primary);">100%</div>
+                        <div style="font-size: 12px; color: var(--text-gray);">Автономия</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ticker -->
+    <div class="ticker-wrap">
+        <div class="ticker">
+            <div class="ticker-item">Make.com Automation</div>
+            <div class="ticker-item">•</div>
+            <div class="ticker-item">Python Scripts</div>
+            <div class="ticker-item">•</div>
+            <div class="ticker-item">ChatGPT Integration</div>
+            <div class="ticker-item">•</div>
+            <div class="ticker-item">Google Apps Script</div>
+            <div class="ticker-item">•</div>
+            <div class="ticker-item">Telegram Bots</div>
+            <div class="ticker-item">•</div>
+            <div class="ticker-item">Make.com Automation</div>
+            <div class="ticker-item">•</div>
+            <div class="ticker-item">Python Scripts</div>
+             <div class="ticker-item">•</div>
+            <div class="ticker-item">ChatGPT Integration</div>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Профайл эксперта</span>
+                <h2 class="section-title">Алексей Доронин:<br>Инженер, а не "волшебник"</h2>
+            </div>
+            
+            <div class="about-grid">
+                <div class="about-text">
+                    <h3>40 лет. Дубай. Инженер + Экономист.</h3>
+                    <p>
+                        Мой путь — это не "успешный успех". Это 5 лет практики в автоматизации.
+                        Я закончил технический колледж (оптико-электронные системы) и Экономический институт.
+                        Это дало мне уникальное видение: я понимаю и как работает код, и как считаются деньги бизнеса.
+                    </p>
+                    <p>
+                        Я здесь, потому что сам знаю, каково это — тонуть в рутине. 
+                        Моя суперсила — видеть хаос и превращать его в скучные, надежные таблицы и скрипты.
+                    </p>
+                    <div class="quote-block">
+                        «Я строю системы, которые живут без меня. Если клиент звонит мне каждый день — значит, я плохо сделал свою работу.»
+                    </div>
+                </div>
+                
+                <div>
+                    <!-- ФОТО 2: ЛАЙФСТАЙЛ (Вставь свою ссылку) -->
+                    <img src="https://images.unsplash.com/photo-1519068737630-e5db1b91275a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" style="width:100%; border-radius: 20px; margin-bottom: 20px; height: 250px; object-fit: cover;" alt="Working Process">
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-num">50+</span>
+                            <span class="stat-label">Проектов</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-num">300%</span>
+                            <span class="stat-label">Рост лидов</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Section (Visual) -->
+    <section class="comparison-section" id="comparison">
+        <div class="comp-container">
+            <h2 style="text-align: center; font-size: 36px; margin-bottom: 10px;">Две реальности</h2>
+            <p style="text-align: center; opacity: 0.7; margin-bottom: 40px;">В какой из них живете вы?</p>
+            
+            <div class="comp-grid">
+                <!-- Bad Side -->
+                <div class="comp-card bad">
+                    <div class="comp-title">
+                        Ручной хаос
+                        <i class="fa-solid fa-triangle-exclamation" style="color: #EF4444;"></i>
+                    </div>
+                    <ul class="comp-list">
+                        <li><i class="fa-solid fa-xmark" style="color: #EF4444;"></i> Вы сами постите контент (20ч/нед)</li>
+                        <li><i class="fa-solid fa-xmark" style="color: #EF4444;"></i> Лиды теряются в Direct</li>
+                        <li><i class="fa-solid fa-xmark" style="color: #EF4444;"></i> Отчеты собираются вручную</li>
+                        <li><i class="fa-solid fa-xmark" style="color: #EF4444;"></i> Вы боитесь заболеть</li>
+                    </ul>
+                </div>
+
+                <!-- Good Side -->
+                <div class="comp-card good">
+                    <div class="comp-title">
+                        Система Доронина
+                        <i class="fa-solid fa-circle-check" style="color: #10B981;"></i>
+                    </div>
+                    <ul class="comp-list">
+                        <li><i class="fa-solid fa-check" style="color: #10B981;"></i> Автопостинг на 5 площадок</li>
+                        <li><i class="fa-solid fa-check" style="color: #10B981;"></i> Бот квалифицирует лидов 24/7</li>
+                        <li><i class="fa-solid fa-check" style="color: #10B981;"></i> Скрипт сам делает отчеты</li>
+                        <li><i class="fa-solid fa-check" style="color: #10B981;"></i> Вы управляете, а не работаете</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services-section" id="services">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Пакеты услуг</span>
+                <h2 class="section-title">От аудита до<br>полной архитектуры</h2>
+            </div>
+
+            <div class="services-grid">
+                <!-- START -->
+                <div class="service-card">
+                    <span class="tag-badge">Быстрый старт</span>
+                    <div class="srv-icon"><i class="fa-solid fa-bolt"></i></div>
+                    <h3 class="srv-title">START</h3>
+                    <p class="srv-desc">Находим утечки времени и внедряем MVP за 1 неделю.</p>
+                    <ul class="check-list">
+                        <li><i class="fa-solid fa-check"></i> Аудит процессов</li>
+                        <li><i class="fa-solid fa-check"></i> Карта болей</li>
+                        <li><i class="fa-solid fa-check"></i> 1 Бот или Автопостинг</li>
+                    </ul>
+                    <a href="https://t.me/AlexD_GOLD" class="srv-btn">Заказать START</a>
+                </div>
+
+                <!-- PRO -->
+                <div class="service-card highlight">
+                    <span class="tag-badge">Хит продаж</span>
+                    <div class="srv-icon"><i class="fa-solid fa-layer-group"></i></div>
+                    <h3 class="srv-title">PRO</h3>
+                    <p class="srv-desc">Комплексная автоматизация. Система начинает работать сама.</p>
+                    <ul class="check-list">
+                        <li><i class="fa-solid fa-check"></i> Аудит + 2-3 решения</li>
+                        <li><i class="fa-solid fa-check"></i> Make + Google Sheets</li>
+                        <li><i class="fa-solid fa-check"></i> Логирование и алерты</li>
+                    </ul>
+                    <a href="https://t.me/AlexD_GOLD" class="srv-btn">Заказать PRO</a>
+                </div>
+
+                <!-- GROWTH -->
+                <div class="service-card">
+                    <span class="tag-badge">Бизнес</span>
+                    <div class="srv-icon"><i class="fa-solid fa-diagram-project"></i></div>
+                    <h3 class="srv-title">GROWTH</h3>
+                    <p class="srv-desc">Кастомная разработка под масштаб и сложные воронки.</p>
+                    <ul class="check-list">
+                        <li><i class="fa-solid fa-check"></i> Python + Make связки</li>
+                        <li><i class="fa-solid fa-check"></i> Сложные IG воронки</li>
+                        <li><i class="fa-solid fa-check"></i> Полное сопровождение</li>
+                    </ul>
+                    <a href="https://t.me/AlexD_GOLD" class="srv-btn">Обсудить проект</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cases (Stats) Section -->
+    <section id="cases" style="background: #F8FAFC; padding-bottom: 80px;">
+        <div class="container">
+            <h2 class="section-title" style="text-align: center; margin-bottom: 50px;">Результаты внедрения</h2>
+            <div class="services-grid">
+                
+                <div class="service-card">
+                    <div style="font-size: 48px; font-weight: 800; color: var(--accent); margin-bottom: 10px;">100%</div>
+                    <div style="font-weight: 700; margin-bottom: 10px;">Автопостинг</div>
+                    <p style="color: var(--text-gray); font-size: 14px;">Клиент перестал тратить 8 часов в неделю на рубликацию. Make постит в 5 соцсетей сам.</p>
+                </div>
+
+                <div class="service-card">
+                    <div style="font-size: 48px; font-weight: 800; color: #10B981; margin-bottom: 10px;">x3</div>
+                    <div style="font-weight: 700; margin-bottom: 10px;">Конверсия в заявку</div>
+                    <p style="color: var(--text-gray); font-size: 14px;">Внедрили воронку Instagram -> Direct -> Лендинг. Лиды не теряются, а прогреваются.</p>
+                </div>
+
+                <div class="service-card">
+                    <div style="font-size: 48px; font-weight: 800; color: var(--gold); margin-bottom: 10px;">0 ч</div>
+                    <div style="font-weight: 700; margin-bottom: 10px;">На отчеты</div>
+                    <p style="color: var(--text-gray); font-size: 14px;">Раньше сбор отчета занимал 2 часа/день. Теперь скрипт делает это за 3 секунды.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Lead Magnet Block -->
+    <div class="container">
+        <div class="magnet-block">
+            <div class="magnet-overlay"></div>
+            <div class="magnet-content">
+                <h2 style="font-size: 36px; font-weight: 800; margin-bottom: 20px;">Где вы теряете деньги?</h2>
+                <p style="font-size: 18px; margin-bottom: 30px; opacity: 0.9;">
+                    Я подготовил чек-лист из 5 неочевидных утечек времени, которые убивают продуктивность эксперта.
+                </p>
+                <a href="https://t.me/AlexD_GOLD" class="magnet-btn">
+                    <i class="fa-brands fa-telegram"></i> Забрать чек-лист
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="logo" style="margin-bottom: 20px;">Doronin.AI</div>
+                    <p style="color: var(--text-gray);">Системная автоматизация бизнеса.<br>Dubai, UAE.</p>
+                </div>
+                <div class="footer-links">
+                    <strong>Навигация</strong>
+                    <a href="#about" style="margin-top: 15px;">Обо мне</a>
+                    <a href="#services">Услуги</a>
+                    <a href="#cases">Кейсы</a>
+                </div>
+                <div class="footer-links">
+                    <strong>Контакты</strong>
+                    <a href="https://t.me/AlexD_GOLD">Telegram: @AlexD_GOLD</a>
+                    <a href="#">Instagram</a>
+                    <a href="#">LinkedIn</a>
+                </div>
+            </div>
+            <div style="text-align: center; font-size: 13px; color: #94A3B8;">
+                &copy; 2025 Алексей Доронин. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Telegram -->
+    <a href="https://t.me/AlexD_GOLD" class="float-tg">
+        <i class="fa-brands fa-telegram"></i>
+        <div class="float-badge"></div>
+    </a>
+
+    <script>
+        // Эффект печатающей машинки
+        const textElement = document.getElementById('typewriter');
+        const phrases = ["Время", "Деньги", "Покой", "Контроль"];
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+
+        function type() {
+            const current = phrases[phraseIndex];
+            if (isDeleting) {
+                textElement.textContent = current.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                textElement.textContent = current.substring(0, charIndex + 1);
+                charIndex++;
+            }
+
+            if (!isDeleting && charIndex === current.length) {
+                isDeleting = true;
+                setTimeout(type, 2000); // Пауза перед удалением
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+                setTimeout(type, 500);
+            } else {
+                setTimeout(type, isDeleting ? 50 : 100);
+            }
+        }
+        document.addEventListener('DOMContentLoaded', type);
+    </script>
+
+</body>
+</html>
